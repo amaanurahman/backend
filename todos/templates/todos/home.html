@@ -1,0 +1,121 @@
+{% extends 'todos/base.html' %}
+{% block content %}
+
+<h2>My Todos</h2>
+
+<!-- Add Todo Button -->
+<button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addTodoModal">Add Todo</button>
+
+<!-- Incomplete Todos Table -->
+<table class="table table-striped">
+<thead>
+<tr>
+<th>Title</th>
+<th>Description</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+{% for todo in todos %}
+{% if not todo.complete %}
+<tr>
+<td>{{ todo.title }}</td>
+<td>{{ todo.description }}</td>
+<td>
+    <!-- Edit Button -->
+    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editTodoModal{{ todo.id }}">Edit</button>
+    <a class="btn btn-danger btn-sm" href="/delete/{{ todo.id }}/">Delete</a>
+    <a class="btn btn-info btn-sm" href="/complete/{{ todo.id }}/">Complete</a>
+</td>
+</tr>
+
+<!-- Edit Modal (only for incomplete tasks) -->
+<div class="modal fade" id="editTodoModal{{ todo.id }}" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+<form method="POST" action="/edit/{{ todo.id }}/">
+{% csrf_token %}
+<div class="modal-header">
+<h5 class="modal-title">Edit Todo</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<div class="mb-3">
+<label>Title</label>
+<input type="text" class="form-control" name="title" value="{{ todo.title }}" required>
+</div>
+<div class="mb-3">
+<label>Description</label>
+<textarea class="form-control" name="description">{{ todo.description }}</textarea>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-primary" type="submit">Update</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+
+{% endif %}
+{% endfor %}
+</tbody>
+</table>
+
+<!-- Completed Tasks Section -->
+{% if todos|length > 0 %}
+<h3 class="mt-5">Completed Tasks</h3>
+<table class="table table-striped">
+<thead>
+<tr>
+<th>Title</th>
+<th>Description</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+{% for todo in todos %}
+{% if todo.complete %}
+<tr>
+<td>{{ todo.title }}</td>
+<td>{{ todo.description }}</td>
+<td>
+    <a class="btn btn-info btn-sm" href="/complete/{{ todo.id }}/">Mark Incomplete</a>
+    <a class="btn btn-danger btn-sm" href="/delete/{{ todo.id }}/">Delete</a>
+</td>
+</tr>
+{% endif %}
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+
+<!-- Add Todo Modal -->
+<div class="modal fade" id="addTodoModal" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+<form method="POST" action="/add/">
+{% csrf_token %}
+<div class="modal-header">
+<h5 class="modal-title">Add Todo</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<div class="mb-3">
+<label>Title</label>
+<input type="text" class="form-control" name="title" required>
+</div>
+<div class="mb-3">
+<label>Description</label>
+<textarea class="form-control" name="description"></textarea>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-success" type="submit">Add</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+
+{% endblock %}
